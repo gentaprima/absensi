@@ -176,4 +176,28 @@
             return $this->db->query($sql,array($startDate,$endDate,$id_users,$status))->result_array();
         }
 
+        public function getDataAbsensiByRangeDate($starDate,$endDate){
+            $sql = "SELECT * FROM tb_absensi WHERE
+                    (date BETWEEN ? AND ?)";
+            return $this->db->query($sql,array($starDate,$endDate))->result_array();
+        }
+
+        public function getJadwalKerjaGroupByDate($status){
+            $sql = "SELECT * FROM tb_absensi 
+                        WHERE work_day = ? GROUP BY date";
+            return $this->db->query($sql,$status)->result_array();
+        }
+
+        public function getDataJadwalKerjaByDate($date){
+            $sql = "SELECT * FROM tb_absensi WHERE date = ? GROUP BY date";
+            return $this->db->query($sql,$date)->row_array();
+        }
+
+        public function getDataHadirAll($date,$status){
+            $sql = "SELECT COUNT(id_absensi)as jumlah FROM tb_absensi WHERE 
+                    date = ? AND
+                    status = ? GROUP BY date";
+            return $this->db->query($sql,array($date,$status))->row_array();
+        }
+
     }

@@ -69,19 +69,61 @@
                 $getJumlahKerja = $this->ModelAbsensi->getJumlahHari(1);
                 $getJumlahLibur = $this->ModelAbsensi->getJumlahHari(0);
                 
-                $getDataJadwal += array("jumlah_kerja" => count($getJumlahKerja));
-                $getDataJadwal += array("jumlah_libur" => count($getJumlahLibur));
+                if($getJumlahKerja != null){
+                    
+                    $getDataJadwal += array("jumlah_kerja" => count($getJumlahKerja));
+                }else{
+                    $getDataJadwal += array("jumlah_kerja" => 0);
+                }
+
+                if($getJumlahLibur != null){
+
+                    $getDataJadwal += array("jumlah_libur" => count($getJumlahLibur));
+                }else{
+                    $getDataJadwal += array("jumlah_libur" => 0);
+
+                }
 
                 array_push($array,$getDataJadwal);
             }   
 
+            $dataLibur = $this->ModelAbsensi->getJadwalKerjaGroupByDate(0);
+            $dataKerja = $this->ModelAbsensi->getJadwalKerjaGroupByDate(1);
+            $arrayKerja = [];
+            foreach($dataKerja as $dk){
+                $getDataJadwalKerja = $this->ModelAbsensi->getDataJadwalKerjaByDate($dk['date']);
+                $getHadir = $this->ModelAbsensi->getDataHadirAll($dk['date'],'Hadir');
+                $getIzin = $this->ModelAbsensi->getDataHadirAll($dk['date'],'Izin');
+                $getTidak = $this->ModelAbsensi->getDataHadirAll($dk['date'],'Tidak');
+                if($getHadir != null){
+                    $jumlahHadir = $getHadir['jumlah'];
+                }else{
+                    $jumlahHadir = 0;
+                }
+                if($getTidak != null){
+                    $jumlahTidak = $getTidak['jumlah'];
+                }else{
+                    $jumlahTidak = 0;
+                }
+                if($getIzin != null){
+                    $jumlahIzin = $getIzin['jumlah'];
+                }else{
+                    $jumlahIzin = 0;
+                }
+                $getDataJadwalKerja+= array("jumlah_hadir" => $jumlahHadir);
+                $getDataJadwalKerja+= array("jumlah_izin" => $jumlahIzin);
+                $getDataJadwalKerja+= array("jumlah_tidak" => $jumlahTidak);
+                array_push($arrayKerja,$getDataJadwalKerja);
+            }
 
 
             $data= array(
                 "breadcumb"     => "Data Jadwal Kerja",
                 "title"         => "Jadwal Kerja - PT. Vinita",
                 "jadwal"        => "active",
-                'data_jadwal'   => $array
+                'data_jadwal'   => $array,
+                'data_libur'    => $dataLibur,
+                'data_kerja'    => $arrayKerja
             );
                
             $this->load->view('layout/header',$data);

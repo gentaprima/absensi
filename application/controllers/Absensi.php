@@ -71,6 +71,17 @@ class Absensi extends CI_Controller
         $endDate = $this->input->post('sampai_tanggal');
         $checkKerja = $this->input->post('check_kerja');
         $checkLibur = $this->input->post('check_libur');
+        if($checkKerja != null){
+            $kerja = 1;
+        }else{
+            $kerja = 0;
+        }
+
+        if($checkLibur != null){
+            $libur = 1;
+        }else{
+            $libur = 0;
+        }
 
         if ($starDate != null && $endDate != null) {
             if ($checkKerja != null || $checkLibur != null) {
@@ -122,54 +133,125 @@ class Absensi extends CI_Controller
                         array_push($pegawaiLibur, $cekDataAbsensi[0]['id_users']);
                     }
                 }
-                
+
 
                 $result = array_diff($pegawaiAll, $pegawaiAbsen);
                 $resultLibur = array_diff($pegawaiAll, $pegawaiLibur);
                 $resultTidak = array_diff($pegawaiAll, $pegawaiAbsenHadir);
+                if($kerja == 1 && $libur == 1){
+                    if ($resultTidak != null) {
 
-                //insert hari kerja
-                for ($j = 0; $j < count($dateOfWork); $j++) {
-                    for ($i = 0; $i < count($resultTidak); $i++) {
-                        $data = array([
-                            'id_users'  => $resultTidak[$i],
-                            'date'      => $dateOfWork[$j],
-                            'status'    => 'Tidak',
-                            'work_day'  => 1
-                        ]);
-                        $this->ModelAbsensi->insertAbsensiAll($data);
+                        //insert hari kerja
+                        for ($j = 0; $j < count($dateOfWork); $j++) {
+                            for ($i = 0; $i < count($resultTidak); $i++) {
+                                $data = array([
+                                    'id_users'  => $resultTidak[$i],
+                                    'date'      => $dateOfWork[$j],
+                                    'status'    => 'Tidak',
+                                    'work_day'  => 1
+                                ]);
+                                $this->ModelAbsensi->insertAbsensiAll($data);
+                            }
+                        }
+                        $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByRangeDate($starDate, $endDate);
+    
+                        foreach ($getDataAbsensi as $gda) {
+                            $addUangMakan = array([
+                                'nominal'       => 0,
+                                'tanggal'       => $gda['date'],
+                                'id_users'      => $gda['id_users'],
+                                'id_absensi'    => $gda['id_absensi']
+                            ]);
+                            $this->ModelAbsensi->addUangMakanBatch($addUangMakan);
+                        }
+                        for ($k = 0; $k < count($dateOfHoliday); $k++) {
+                            for ($i = 0; $i < count($resultLibur); $i++) {
+                                $data = array([
+                                    'id_users'  => $resultLibur[$i],
+                                    'date'      => $dateOfHoliday[$k],
+                                    'status'    => 'Libur',
+                                    'work_day'  => 0
+                                ]);
+                                $this->ModelAbsensi->insertAbsensiAll($data);
+                            }
+                        }
+                        $this->session->set_flashdata('icon', 'success');
+                        $this->session->set_flashdata('text', 'Jadwal Kerja berhasil ditambahkan');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Sukses');
+                        redirect(base_url('home/jadwal_kerja'));
+                        
+                    } else {
+                        $this->session->set_flashdata('icon', 'error');
+                        $this->session->set_flashdata('text', 'Mohon maaf, diantara tanggal yang diinput sudah tersimpan dijadwal, silahkan periksa kembali tanggal mulai dan tanggal akhir');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Gagal');
+                        redirect(base_url('home/jadwal_kerja'));
                     }
-                }
+                }else if($kerja == 1){
+                    if ($resultTidak != null) {
 
-
-                //insert hari libur
-                for ($k = 0; $k < count($dateOfHoliday); $k++) {
-                    for ($i = 0; $i < count($resultLibur); $i++) {
-                        $data = array([
-                            'id_users'  => $resultLibur[$i],
-                            'date'      => $dateOfHoliday[$k],
-                            'status'    => 'Libur',
-                            'work_day'  => 0
-                        ]);
-                        $this->ModelAbsensi->insertAbsensiAll($data);
+                        //insert hari kerja
+                        for ($j = 0; $j < count($dateOfWork); $j++) {
+                            for ($i = 0; $i < count($resultTidak); $i++) {
+                                $data = array([
+                                    'id_users'  => $resultTidak[$i],
+                                    'date'      => $dateOfWork[$j],
+                                    'status'    => 'Tidak',
+                                    'work_day'  => 1
+                                ]);
+                                $this->ModelAbsensi->insertAbsensiAll($data);
+                            }
+                        }
+                        $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByRangeDate($starDate, $endDate);
+    
+                        foreach ($getDataAbsensi as $gda) {
+                            $addUangMakan = array([
+                                'nominal'       => 0,
+                                'tanggal'       => $gda['date'],
+                                'id_users'      => $gda['id_users'],
+                                'id_absensi'    => $gda['id_absensi']
+                            ]);
+                            $this->ModelAbsensi->addUangMakanBatch($addUangMakan);
+                        }
+                        
+                        $this->session->set_flashdata('icon', 'success');
+                        $this->session->set_flashdata('text', 'Jadwal Kerja berhasil ditambahkan');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Sukses');
+                        redirect(base_url('home/jadwal_kerja'));
+                        
+                    } else {
+                        $this->session->set_flashdata('icon', 'error');
+                        $this->session->set_flashdata('text', 'Mohon maaf, diantara tanggal yang diinput sudah tersimpan dijadwal, silahkan periksa kembali tanggal mulai dan tanggal akhir');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Gagal');
+                        redirect(base_url('home/jadwal_kerja'));
                     }
+                }else if($libur == 1){
+                    if($resultLibur != null){
+                        for ($k = 0; $k < count($dateOfHoliday); $k++) {
+                            for ($i = 0; $i < count($resultLibur); $i++) {
+                                $data = array([
+                                    'id_users'  => $resultLibur[$i],
+                                    'date'      => $dateOfHoliday[$k],
+                                    'status'    => 'Libur',
+                                    'work_day'  => 0
+                                ]);
+                                $this->ModelAbsensi->insertAbsensiAll($data);
+                            }
+                        }
+                        $this->session->set_flashdata('icon', 'success');
+                        $this->session->set_flashdata('text', 'Jadwal Kerja berhasil ditambahkan');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Sukses');
+                        redirect(base_url('home/jadwal_kerja'));
+                    }else{
+                        $this->session->set_flashdata('icon', 'error');
+                        $this->session->set_flashdata('text', 'Mohon maaf, diantara tanggal yang diinput sudah tersimpan dijadwal, silahkan periksa kembali tanggal mulai dan tanggal akhir');
+                        $this->session->set_flashdata('title', 'Tambah Jadwal Gagal');
+                        redirect(base_url('home/jadwal_kerja'));
+                    }
+                    
                 }
-
-                $getDataAbsensi = $this->db->get_where('tb_absensi', array('date' => $date))->result_array();
-
-                foreach ($getDataAbsensi as $gda) {
-                    $addUangMakan = array([
-                        'nominal'       => 0,
-                        'tanggal'       => $date,
-                        'id_users'      => $gda['id_users'],
-                        'id_absensi'    => $gda['id_absensi']
-                    ]);
-                    $this->ModelAbsensi->addUangMakanBatch($addUangMakan);
-                }
-                $this->session->set_flashdata('icon', 'success');
-                $this->session->set_flashdata('text', 'Jadwal Kerja berhasil ditambahkan');
-                $this->session->set_flashdata('title', 'Tambah Jadwal Sukses');
-                redirect(base_url('home/jadwal_kerja'));
+               
+               
+               
             } else {
                 $this->session->set_flashdata('icon', 'error');
                 $this->session->set_flashdata('text', 'Mohon maaf, Silahkan pilih terlebih dahulu untuk perhitungan hari kerja atau hari libur');
