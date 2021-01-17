@@ -1,11 +1,11 @@
 <?php
 
     class ModelGaji extends CI_Model{
-        public function getDataTotal($id_users,$month){
+        public function getDataTotal($id_users,$starDate,$endDate){
             $sql = "SELECT SUM(nominal)as total from tb_uangmakan WHERE
-                        MONTH(tanggal) = ? AND
+                        (tanggal BETWEEN ? AND ?) AND
                         id_users = ?";
-            return $this->db->query($sql,array($month,$id_users))->row_array();
+            return $this->db->query($sql,array($starDate,$endDate,$id_users))->row_array();
         }
 
         public function getAllData($id_users,$month){

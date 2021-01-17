@@ -100,8 +100,9 @@ class Surat extends RestController
         $end_date = $this->input->post('end_date');
         $no_pegawai = $this->input->post('id_users');
         $expected_days     =  array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+        $days     =  array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday');
         $getHari = $this->isWeekend($start_date, $end_date, $expected_days);
-        $checkData = $this->isWeekend($dataNow,$start_date,$expected_days);
+        $checkData = $this->isWeekend($dataNow,$start_date,$days);
         $jumlah_hari = count($getHari);
         $arrayDate = explode('-', $end_date);
         $tahunCuti = $arrayDate[0];
@@ -115,6 +116,7 @@ class Surat extends RestController
 
         if ($keterangan != null && $start_date != null && $end_date != null && $no_pegawai != null) {
             if($checkData != null){
+                if(count($checkData) >= 7){
                 if (count($getHari) > 1) {
                     if ($getDataCuti != null) {
                         if ($tahunCuti <= $batasTahun) {
@@ -179,6 +181,12 @@ class Surat extends RestController
                         'status'    => false
                     ], 200);
                 }
+            }else{
+                $this->response([
+                    'message'   => "Mohon maaf, Silahkan Ajukan cuti seminggu setelah hari ini ",
+                    'status'    => false
+                ], 200);
+            }
             }else{
                 $this->response([
                     'message'   => "Mohon maaf, Silahkan Masukan tanggal mulai dan akhir yang benar",

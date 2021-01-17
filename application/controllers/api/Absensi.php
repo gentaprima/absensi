@@ -247,8 +247,11 @@
             $month = date('m');
             $getDataPegawai = $this->ModelUsers->getDataUsersByIdPegawai($no_pegawai);
             $id_users = $getDataPegawai['id_users'];
-
-            $getData = $this->ModelGaji->getAllData($id_users,$month);
+            
+            $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByMonthAsc($month);
+            $startDate = $getDataAbsensi['date'];
+            $endDate = date('Y-m-d');
+            $getData = $this->ModelGaji->getAllData($id_users,$startDate,$endDate);
             $this->response([
                 'status'    => true,
                 'data_gaji' => $getData

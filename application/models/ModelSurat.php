@@ -46,9 +46,8 @@
         public function getTotalCutiByIdUsers($id_users){
             $sql = "SELECT SUM(jumlah_hari)as total FROM tb_cuti
                         WHERE id_users = ? AND
-                        status = ? OR 
                         status = ?";
-            return $this->db->query($sql,array($id_users,0,2))->row_array();
+            return $this->db->query($sql,array($id_users,2))->row_array();
         }
 
         public function getDataSisaCutiByIdUsers($id_users,$year){
