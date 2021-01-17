@@ -14,7 +14,7 @@
               <div class="col-lg-12 grid-margin stretch-card">
                   <div class="card">
                       <div class="card-body">
-                          <h4 class="card-title"><?= $breadcumb ?> Bulan <?= date('F') ?></h4>
+                          <h4 class="card-title"><?= $breadcumb ?> Bulan <?= $date  ?></h4>
                           <button onClick="addData('<?= base_url() ?>')" data-target="#modalAdd" data-toggle="modal" style="float: right;position:relative;bottom:45px;" class="btn btn-outline-info">Tambah Jadwal</button>
                           <button onClick="addData('<?= base_url() ?>')" data-target="#modalBulan" data-toggle="modal" style="float: right;position:relative;bottom:45px; margin-right:20px;" class="btn btn-outline-warning">Pilih Bulan</button>
                           </p>
@@ -146,7 +146,7 @@
                               <div class="form-group row">
                                   <label for="nama_jabatan" class="col-sm-2 col-form-label">Pilih Bulan</label>
                                   <div class="col-sm-10">
-                                      <input type="bulan" class="form-control" name="pilih_bulan">
+                                      <input type="month" class="form-control" name="pilih_bulan">
                                   </div>
                               </div>
 
@@ -154,7 +154,7 @@
                   </div>
                   <hr>
                   <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary btn-fw">Simpan Data</button>
+                      <button type="submit" class="btn btn-primary btn-fw">Lihat Data</button>
                       <button type="button" class="btn btn-outline-secondary btn-fw" data-dismiss="modal">CLOSE</button>
                       </form>
                   </div>

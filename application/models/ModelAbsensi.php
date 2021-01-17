@@ -58,6 +58,12 @@
                         MONTH(tb_absensi.date) = ? ORDER BY date DESC";
             return $this->db->query($sql,$month)->result_array();
         }
+        public function getDataAbsensiByRangeBulan($starDate,$endDate){
+            $sql = "SELECT * FROM tb_absensi,tb_users WHERE 
+                        tb_absensi.id_users =  tb_users.id_users AND
+                        (date BETWEEN ? AND ?)  ORDER BY date DESC";
+            return $this->db->query($sql,array($starDate,$endDate))->result_array();
+        }
 
         public function getDataAbsensiByBulanAndId($month,$id_users){
             $sql = "SELECT * FROM tb_absensi,tb_users WHERE 
@@ -142,16 +148,26 @@
             return $this->db->query($sql)->result_array();
         }
 
-        public function getJadwalKerjaGroup($work_day){
+        public function getJadwalKerjaGroup($work_day,$month,$year){
             $sql = "SELECT * FROM tb_absensi
-                        WHERE work_day = ?
+                        WHERE work_day = ? AND 
+                        MONTH(date) = ? AND 
+                        YEAR(date) = ?
                          GROUP BY work_day";
-            return $this->db->query($sql,$work_day)->row_array();
+            return $this->db->query($sql,array($work_day,$month,$year))->row_array();
         }
 
         public function getJumlahHari($status){
             $sql = "SELECT *  FROM tb_absensi WHERE work_day = ? GROUP BY date";
             return $this->db->query($sql,$status)->result_array();
+        }
+        public function getJumlahHariByMonth($status,$month,$year){
+            $sql = "SELECT *  FROM tb_absensi 
+                        WHERE 
+                            work_day = ?  AND
+                            MONTH(date) = ? AND 
+                            YEAR(date) = ?GROUP BY date";
+            return $this->db->query($sql,array($status,$month,$year))->result_array();
         }
 
         public function getDataAbsensiByMonthAsc($month){
@@ -182,10 +198,12 @@
             return $this->db->query($sql,array($starDate,$endDate))->result_array();
         }
 
-        public function getJadwalKerjaGroupByDate($status){
+        public function getJadwalKerjaGroupByDate($status,$month,$year){
             $sql = "SELECT * FROM tb_absensi 
-                        WHERE work_day = ? GROUP BY date";
-            return $this->db->query($sql,$status)->result_array();
+                        WHERE work_day = ? AND
+                        MONTH(date) = ? AND
+                        YEAR(date) = ? GROUP BY date";
+            return $this->db->query($sql,array($status,$month,$year))->result_array();
         }
 
         public function getDataJadwalKerjaByDate($date){

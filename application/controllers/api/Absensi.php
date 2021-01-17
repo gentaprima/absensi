@@ -161,6 +161,7 @@
 
         public function getLaporanKehadiran_post(){
             $month = date('m');
+            $year = date('Y');
             $no_pegawai = $this->input->post('id_users');
             $getDataPegawai = $this->ModelUsers->getDataUsersByIdPegawai($no_pegawai);
             $id_users = $getDataPegawai['id_users'];
@@ -178,8 +179,8 @@
             $getDataHadir = $this->ModelAbsensi->getDataHadirByBetween($id_users,$startDate,$endDate,'Hadir');
             $getDataTidakHadir = $this->ModelAbsensi->getDataHadirByBetween($id_users,$startDate,$endDate,'Tidak');
             $getDataIzin = $this->ModelAbsensi->getDataHadirByBetween($id_users,$startDate,$endDate,'Izin');
-            $getJumlahKerja = $this->ModelAbsensi->getJumlahHari(1);
-            $getJumlahLibur = $this->ModelAbsensi->getJumlahHari(0);
+            $getJumlahKerja = $this->ModelAbsensi->getJumlahHariByMonth(1,$month,$year);
+            $getJumlahLibur = $this->ModelAbsensi->getJumlahHariByMonth(0,$month,$year);
 
             $this->response([
                 'message'       => "data berhasil didapatkan",
