@@ -92,6 +92,63 @@ class Surat extends RestController
         }
     }
 
+    public function addSuratIzinLainnya_post()
+    {
+        $id_pegawai = $this->input->post('id_users');
+        $data_users = $this->db->get_where('tb_users', array('no_pegawai' => $id_pegawai))->row_array();
+        $id_users = $data_users['id_users'];
+        $date = date('Y-m-d');
+        $alasan = $this->input->post('alasan');
+
+
+        if ($id_users != null && $alasan != null) {
+            
+            $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsers($id_users, $date);
+            if ($getDataAbsensi != null) {
+                $getDataIzin = $this->ModelSurat->getDataIzinByIdUsers($id_users, $date);
+                if ($getDataAbsensi['status'] == "Tidak") {
+                    if ($getDataIzin == null) {
+                        if ($this->upload->do_upload('image')) {
+                            $id_absensi = $getDataAbsensi['id_absensi'];
+                            $data = array(
+                                'tanggal'   => $date,
+                                'alasan'    => $alasan,
+                                'id_users'  => $id_users,
+                                'id_absensi'    => $id_absensi
+                            );
+
+                            $this->ModelSurat->addSuratIzin($data);
+                            $this->response([
+                                'message'   => "Permohonan izin sudah tersimpan, Silahkan tunggu konfirmasi selanjutnya",
+                                'status'    =>  true
+                            ], 200);
+                        }
+                    } else {
+                        $this->response([
+                            'message'   => "Mohon maaf, anda hanya bisa mengajukan permohonan sekali dalam sehari !",
+                            'status'    =>  true
+                        ], 200);
+                    }
+                } else {
+                    $this->response([
+                        'message'   => "Mohon maaf, anda tidak bisa mengajukan izin karena status anda sudah hadir atau sedang cuti",
+                        'status'    =>  true
+                    ], 200);
+                }
+            } else {
+                $this->response([
+                    'message'   => "Mohon maaf, Absensi belum dimulai ... Silahkan ajukan permohonan nanti ",
+                    'status'    =>  false
+                ], 200);
+            }
+        } else {
+            $this->response([
+                'message'   => 'Data Tidak Boleh kosong !!',
+                'status'    => false
+            ], 200);
+        }
+    }
+
     public function addSuratCuti_post()
     {
         $dataNow = date("Y-m-d");
