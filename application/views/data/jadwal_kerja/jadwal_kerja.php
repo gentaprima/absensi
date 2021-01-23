@@ -183,7 +183,7 @@
                               <?php $i = 1; foreach ($data_kerja as $row) { ?>
                                   <tr>
                                     <td><?= $i++ ?></td>
-                                    <td><span class="badge badge-outline-success"><?= date_format(date_create($row['date']), "d F Y") ?></td>
+                                    <td><span class="badge badge-outline-success"><?= date_format(date_create($row['date']), "l, d F Y") ?></td>
                                     <td><?= $row['jumlah_hadir'] ?></td>
                                     <td><?= $row['jumlah_tidak'] ?></td>
                                     <td><?= $row['jumlah_izin'] ?></td>
@@ -194,7 +194,7 @@
                   </div>
                   <hr>
                   <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary btn-fw">Simpan Data</button>
+                      <!-- <button type="submit" class="btn btn-primary btn-fw">Simpan Data</button> -->
                       <button type="button" class="btn btn-outline-secondary btn-fw" data-dismiss="modal">CLOSE</button>
                       </form>
                   </div>
@@ -223,7 +223,7 @@
                                 foreach ($data_libur as $row) { ?>
                                   <tr>
                                       <td><?= $i++ ?></td>
-                                      <td><span class="badge badge-outline-danger"><?= date_format(date_create($row['date']), "d F Y") ?></span></td>
+                                      <td><span class="badge badge-outline-danger"><?= date_format(date_create($row['date']), "l, d F Y") ?></span></td>
                                   </tr>
                               <?php } ?>
                           </tbody>
@@ -231,7 +231,7 @@
                   </div>
                   <hr>
                   <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary btn-fw">Simpan Data</button>
+                      <!-- <button type="submit" class="btn btn-primary btn-fw">Simpan Data</button> -->
                       <button type="button" class="btn btn-outline-secondary btn-fw" data-dismiss="modal">CLOSE</button>
                       </form>
                   </div>

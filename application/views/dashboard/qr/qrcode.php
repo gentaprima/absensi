@@ -47,7 +47,7 @@
 
                 <div class="alert alert-warning" style="margin:26px 88px 26px 80px;" role="alert">
                     <?php if (!isset($qr_code)) { ?>
-                        Silahkan Masukan ID Pegawai untuk melakukan absensi
+                        Silahkan Masukan No Pegawai untuk melakukan absensi
                     <?php } else { ?>
                         Silahkan Scan QR Code dibawah ini !
                     <?php } ?>

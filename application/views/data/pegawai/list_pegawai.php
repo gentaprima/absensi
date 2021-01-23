@@ -62,7 +62,7 @@
                                                           </button>
                                                       </span>
                                                       <span data-toggle="modal" data-target="#modalAdd">
-                                                          <button onClick="updateData('<?= $row['nama_lengkap'] ?>','<?= $row['nik'] ?>','<?= $row['email'] ?>','<?= $row['no_telp'] ?>','<?= $row['id_jabatan'] ?>','<?= $row['no_pegawai'] ?>','<?= base_url() ?>')" id="btn_verif" type="button" class="btn btn-inverse-success btn-rounded btn-icon" data-toggle="tooltip" data-placement="top" title="Unah Data Pegawai">
+                                                          <button onClick="updateData('<?= $row['nama_lengkap'] ?>','<?= $row['nik'] ?>','<?= $row['email'] ?>','<?= $row['no_telp'] ?>','<?= $row['id_jabatan'] ?>','<?= $row['no_pegawai'] ?>','<?= base_url() ?>')" id="btn_verif" type="button" class="btn btn-inverse-success btn-rounded btn-icon" data-toggle="tooltip" data-placement="top" title="Ubah Data Pegawai">
                                                               <i class="mdi mdi-pencil-box-outline"></i>
                                                           </button>
                                                       </span>
