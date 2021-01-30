@@ -35,7 +35,13 @@
                                               <td><span class="badge badge-primary"><?= date('d-m-Y', strtotime($row['tanggal'])) ?></span></td>
                                               <td><?= $row['nama_lengkap'] ?></td>
                                               <td><?= $row['alasan']; ?></td>
-                                              <td><a target="_blank" href="<?= base_url() ?>assets/image_surat/<?= $row['bukti'] ?>" class="badge badge-info">Lihat Bukti</a></td>
+                                              <td>
+                                                 <?php if($row['alasan'] == "Sakit"){ ?>
+                                                  <a target="_blank" href="<?= base_url() ?>assets/image_surat/<?= $row['bukti'] ?>" class="badge badge-info">Lihat Bukti</a>
+                                                  <?php }else{ ?>
+                                                  -
+                                                  <?php } ?>
+                                              </td>
                                               <td>
                                                   <center>
                                                       <span data-toggle="modal" data-target="#modal_detail">

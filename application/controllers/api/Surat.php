@@ -100,7 +100,6 @@ class Surat extends RestController
         $date = date('Y-m-d');
         $alasan = $this->input->post('alasan');
 
-
         if ($id_users != null && $alasan != null) {
             
             $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsers($id_users, $date);
@@ -108,21 +107,19 @@ class Surat extends RestController
                 $getDataIzin = $this->ModelSurat->getDataIzinByIdUsers($id_users, $date);
                 if ($getDataAbsensi['status'] == "Tidak") {
                     if ($getDataIzin == null) {
-                        if ($this->upload->do_upload('image')) {
-                            $id_absensi = $getDataAbsensi['id_absensi'];
-                            $data = array(
-                                'tanggal'   => $date,
-                                'alasan'    => $alasan,
-                                'id_users'  => $id_users,
-                                'id_absensi'    => $id_absensi
-                            );
+                        $id_absensi = $getDataAbsensi['id_absensi'];
+                        $data = array(
+                            'tanggal'   => $date,
+                            'alasan'    => $alasan,
+                            'id_users'  => $id_users,
+                            'id_absensi'    => $id_absensi
+                        );
 
-                            $this->ModelSurat->addSuratIzin($data);
-                            $this->response([
-                                'message'   => "Permohonan izin sudah tersimpan, Silahkan tunggu konfirmasi selanjutnya",
-                                'status'    =>  true
-                            ], 200);
-                        }
+                        $this->ModelSurat->addSuratIzin($data);
+                        $this->response([
+                            'message'   => "Permohonan izin sudah tersimpan, Silahkan tunggu konfirmasi selanjutnya",
+                            'status'    =>  true
+                        ], 200);
                     } else {
                         $this->response([
                             'message'   => "Mohon maaf, anda hanya bisa mengajukan permohonan sekali dalam sehari !",
