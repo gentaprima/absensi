@@ -89,4 +89,16 @@
         public function deleteCuti($id_cuti){
             return $this->db->delete('tb_cuti',array('id_cuti'=> $id_cuti));
         }
+
+        //REVISI EVA
+        public function getAllDataSuratIzinByIdUsersNew($id_users,$starDate,$end_date){
+            $sql = "SELECT * FROM tb_surat_tidak_hadir 
+                        JOIN tb_users  ON tb_surat_tidak_hadir.id_users = tb_users.id_users 
+                        JOIN tb_absensi ON tb_surat_tidak_hadir.id_absensi = tb_absensi.id_absensi WHERE 
+                        tb_surat_tidak_hadir.id_users = ? AND
+                        (date BETWEEN ? AND ?) ";
+
+            return $this->db->query($sql,array($id_users,$starDate,$end_date))->result_array();
+        }
+        //REVISI EVA
     }

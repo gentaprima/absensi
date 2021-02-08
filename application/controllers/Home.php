@@ -69,18 +69,36 @@ class Home extends CI_Controller
             $arrayDate = explode("-", $date);
             $year = $arrayDate[0];
             $month = $arrayDate[1];
+            $monthFrom = $month;
+            $monthTo = $monthFrom + 1;
+            $date = $this->_getMonth($monthFrom) . ' ' . $year;
+            $startDate = date('Y').'-'.$monthFrom.'-'.'26';
+            $endDate = date('Y').'-'.$monthTo.'-'.'25';
         } else {
             $year = date('Y');
             $month = date('m');
+            if($month == 1){
+                $monthFrom = 12;
+            }else{
+                $monthFrom = $month - 1;
+            }
+            $startDate = date('Y').'-'.$monthFrom.'-'.'26';
+            $date = $this->_getMonth($monthFrom) . ' ' . $year;
+            $endDate = date('Y').'-'.$month.'-'.'25';
         }
-        $date = $this->_getMonth($month) . ' ' . $year;
+        
+        
+      
+        // $endDate = date('Y-m-d');
+       
+        
         $data_jadwal = $this->ModelAbsensi->getJadwalKerja();
         $array = [];
         foreach ($data_jadwal as $dj) {
             $work_day = $dj['work_day'];
-            $getDataJadwal = $this->ModelAbsensi->getJadwalKerjaGroup($work_day, $month, $year);
-            $getJumlahKerja = $this->ModelAbsensi->getJumlahHariByMonth(1, $month, $year);
-            $getJumlahLibur = $this->ModelAbsensi->getJumlahHariByMonth(0, $month, $year);
+            $getDataJadwal = $this->ModelAbsensi->getJadwalKerjaGroupNew($work_day, $startDate, $endDate);
+            $getJumlahKerja = $this->ModelAbsensi->getJumlahHariByMonthNew(1, $startDate, $endDate);
+            $getJumlahLibur = $this->ModelAbsensi->getJumlahHariByMonthNew(0, $startDate, $endDate);
 
             if ($getDataJadwal != null) {
 
@@ -102,8 +120,9 @@ class Home extends CI_Controller
             }
         }
 
-        $dataLibur = $this->ModelAbsensi->getJadwalKerjaGroupByDate(0, $month, $year);
-        $dataKerja = $this->ModelAbsensi->getJadwalKerjaGroupByDate(1, $month, $year);
+
+        $dataLibur = $this->ModelAbsensi->getJadwalKerjaGroupByDateNew(0, $startDate, $endDate);
+        $dataKerja = $this->ModelAbsensi->getJadwalKerjaGroupByDateNew(1, $startDate, $endDate);
         $arrayKerja = [];
         foreach ($dataKerja as $dk) {
             $getDataJadwalKerja = $this->ModelAbsensi->getDataJadwalKerjaByDate($dk['date']);
@@ -199,15 +218,25 @@ class Home extends CI_Controller
     public function laporan_kehadiran()
     {
         $month = date('m');
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
 
-        $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByMonthAsc($month);
-        $startDate = $getDataAbsensi['date'];
+        // $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByMonthAscNew($monthFrom,$monthFrom);
+        $nameMonth = $this->_getMonth($monthFrom);
+        // $startDate = $getDataAbsensi['date'];
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
         $endDate = date('Y-m-d');
+        // $endDate = date('Y').'-'.$month.'-'.'25';
+
         $data = array(
             "breadcumb"            => "Laporan Kehadiran",
             "title"                => "Laporan Kehadiran - PT. Vinita",
             "laporan_kehadiran"    => "active",
-            "data_kehadiran"       => $this->ModelAbsensi->getDataAbsensiByRangeBulan($startDate, $endDate)
+            "data_kehadiran"       => $this->ModelAbsensi->getDataAbsensiByRangeBulan($startDate, $endDate),
+            "month"                => $nameMonth
         );
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar');
@@ -219,17 +248,26 @@ class Home extends CI_Controller
     public function riwayat_kehadiran()
     {
         $month = date('m');
-        $kehadiran = $this->ModelAbsensi->getDataAbsensiGroup($month);
         $array = [];
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
+        $nameMonth = $this->_getMonth($monthFrom);
+        $kehadiran = $this->ModelAbsensi->getDataAbsensiGroup($month);
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
+        $endDate = date('Y-m-d');
         foreach ($kehadiran as $k) {
             $id_users = $k['id_users'];
-            $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsersGroup($month, $id_users);
-            $hadir = $this->ModelAbsensi->getDataKehadiranByStatus($month, 'Hadir', $id_users);
-            $tidakhadir = $this->ModelAbsensi->getDataKehadiranByStatus($month, 'Tidak', $id_users);
-            $izin = $this->ModelAbsensi->getDataKehadiranByStatus($month, 'Izin', $id_users);
-            $cuti = $this->ModelAbsensi->getDataKehadiranByStatus($month, 'Cuti', $id_users);
-            $telat = $this->ModelAbsensi->getDataKehadiranTelat($month, $id_users);
-            $uangMakan = $this->ModelGaji->getDataTotal($id_users, $month);
+            // $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsersGroup($month, $id_users);
+            $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsersGroupNew($startDate,$endDate, $id_users);
+            $hadir = $this->ModelAbsensi->getDataKehadiranByStatusNew($startDate,$endDate, 'Hadir', $id_users);
+            $tidakhadir = $this->ModelAbsensi->getDataKehadiranByStatusNew($startDate,$endDate, 'Tidak', $id_users);
+            $izin = $this->ModelAbsensi->getDataKehadiranByStatusNew($startDate,$endDate, 'Izin', $id_users);
+            $cuti = $this->ModelAbsensi->getDataKehadiranByStatusNew($startDate,$endDate, 'Cuti', $id_users);
+            $telat = $this->ModelAbsensi->getDataKehadiranTelatNew($startDate,$endDate, $id_users);
+            $uangMakan = $this->ModelGaji->getDataTotal($id_users, $startDate,$endDate);
             if ($hadir != null) {
                 $getDataAbsensi += array('hadir' => $hadir['jumlah']);
             } else {
@@ -264,7 +302,8 @@ class Home extends CI_Controller
             "breadcumb"            => "Riwayat Kehadiran",
             "title"                => "Riwayat Kehadiran - PT. Vinita",
             "riwayat_kehadiran"    => "active",
-            "data_kehadiran"       => $array
+            "data_kehadiran"       => $array,
+            "month"                => $nameMonth
         );
         $this->load->view('layout/header', $data);
         $this->load->view('layout/sidebar');
@@ -277,6 +316,14 @@ class Home extends CI_Controller
     {
         $id_pegawai = $this->uri->segment(3);
         $month = date('m');
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
+        $endDate = date('Y-m-d');
+        $nameMonth = $this->_getMonth($monthFrom);
         $getDataUser = $this->ModelUsers->getDataUsersByIdPegawai($id_pegawai);
         $id_users = $getDataUser['id_users'];
         $year = date('Y');
@@ -285,8 +332,8 @@ class Home extends CI_Controller
             "title"                => "Riwayat Kehadiran - PT. Vinita",
             "riwayat_kehadiran"    => "active",
             "data_pegawai"         => $this->ModelUsers->getDataUsersByIdPegawai($id_pegawai),
-            'data_kehadiran'       => $this->ModelAbsensi->getDataAbsensiByBulanAndId($month, $id_users),
-            'data_suratizin'       => $this->ModelSurat->getAllDataSuratIzinByIdUsers($id_users, $month),
+            'data_kehadiran'       => $this->ModelAbsensi->getDataAbsensiByBulanAndIdNew($startDate,$endDate, $id_users),
+            'data_suratizin'       => $this->ModelSurat->getAllDataSuratIzinByIdUsersNew($id_users, $startDate,$endDate),
             'data_suratcuti'       => $this->ModelSurat->getAllDataCutiByIdUsers($id_users, $year)
         );
         $this->load->view('layout/header', $data);

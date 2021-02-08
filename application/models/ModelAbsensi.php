@@ -176,6 +176,8 @@
             return $this->db->query($sql,$month)->row_array();
         }
 
+        
+
         public function getDataLaporanKehadiranByBetweenDate($id_users,$starDate,$endDate){
             $sql = "SELECT * FROM tb_absensi 
                         WHERE (date BETWEEN ? AND ?) AND
@@ -217,5 +219,71 @@
                     status = ? GROUP BY date";
             return $this->db->query($sql,array($date,$status))->row_array();
         }
+
+        // REVISI EVA
+        public function getDataAbsensiByRangeBulanNew($starDate,$endDate){
+            $sql = "SELECT * FROM tb_absensi,tb_users WHERE 
+                        tb_absensi.id_users =  tb_users.id_users AND
+                        (date BETWEEN ? AND ?)  ORDER BY date DESC";
+            return $this->db->query($sql,array($starDate,$endDate))->result_array();
+        }
+
+        public function getJadwalKerjaGroupNew($work_day,$starDate,$end_date){
+            $sql = "SELECT * FROM tb_absensi
+                        WHERE work_day = ? AND 
+                        (date BETWEEN ? AND ?)
+                         GROUP BY work_day";
+            return $this->db->query($sql,array($work_day,$starDate,$end_date))->row_array();
+        }
+
+        public function getJumlahHariByMonthNew($status,$starDate,$end_date){
+            $sql = "SELECT *  FROM tb_absensi 
+                        WHERE 
+                            work_day = ?  AND
+                            (date BETWEEN ? AND ?) GROUP BY date";
+            return $this->db->query($sql,array($status,$starDate,$end_date))->result_array();
+        }
+
+        public function getJadwalKerjaGroupByDateNew($status,$starDate,$endDate){
+            $sql = "SELECT * FROM tb_absensi 
+                        WHERE work_day = ? AND 
+                             (date BETWEEN ? AND ?) GROUP BY date";
+            return $this->db->query($sql,array($status,$starDate,$endDate))->result_array();
+        }
+
+
+        public function getDataAbsensiByIdUsersGroupNew($starDate,$endDate,$id_users){
+            $sql = "SELECT * FROM tb_absensi,tb_users WHERE
+                        tb_absensi.id_users = tb_users.id_users  AND
+                        (date BETWEEN ? AND ?) AND
+                        tb_absensi.id_users = $id_users GROUP BY tb_absensi.id_users";
+            return $this->db->query($sql,array($starDate,$endDate))->row_array();
+        }
+
+        public function getDataKehadiranByStatusNew($starDate,$endDate,$status,$id_users){
+            $sql = "SELECT COUNT(status) as jumlah FROM tb_absensi WHERE
+                        (date BETWEEN ? AND ?) AND
+                        status = ? AND
+                        tb_absensi.id_users = $id_users GROUP BY id_users";
+            return $this->db->query($sql,array($starDate,$endDate,$status))->row_array();
+        }
+
+        public function getDataKehadiranTelatNew($starDate,$end_date,$id_users){
+            $sql = "SELECT SUM(is_late) as jumlah FROM tb_absensi WHERE
+                        (date BETWEEN ? AND ?) AND
+                        id_users = $id_users";
+            return $this->db->query($sql,array($starDate,$end_date))->row_array();
+        }
+
+        public function getDataAbsensiByBulanAndIdNew($starDate,$endDate,$id_users){
+            $sql = "SELECT * FROM tb_absensi,tb_users WHERE 
+                        tb_absensi.id_users =  tb_users.id_users AND
+                        tb_absensi.id_users = ? AND
+                        (date BETWEEN ? AND ?) ORDER BY date DESC";
+            return $this->db->query($sql,array($id_users,$starDate,$endDate))->result_array();
+        }
+       
+        
+        //REVISI EVA
 
     }

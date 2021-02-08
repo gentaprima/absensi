@@ -14,7 +14,8 @@
               <div class="col-lg-12 grid-margin stretch-card">
                   <div class="card">
                       <div class="card-body">
-                          <h4 class="card-title"><?= $breadcumb ?> Bulan <?= date('F'); ?></h4>
+                          <h4 class="card-title"><?= $breadcumb ?> Bulan <?= $month  ?></h4>
+                          <div class="alert alert-danger">Silahkan Lakukan Rekap Data Sebelum Tanggal 26 Setiap Bulannya</div>
                           <div class="table-responsive">
                               <table class="table table-bordered table-striped  dataTable js-exportable mt-3">
                                   <thead>

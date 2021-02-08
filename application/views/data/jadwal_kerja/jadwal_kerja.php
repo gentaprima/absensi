@@ -18,6 +18,7 @@
                           <button onClick="addData('<?= base_url() ?>')" data-target="#modalAdd" data-toggle="modal" style="float: right;position:relative;bottom:45px;" class="btn btn-outline-info">Tambah Jadwal</button>
                           <button onClick="addData('<?= base_url() ?>')" data-target="#modalBulan" data-toggle="modal" style="float: right;position:relative;bottom:45px; margin-right:20px;" class="btn btn-outline-warning">Pilih Bulan</button>
                           </p>
+                          <div class="alert alert-warning">Silahkan Input Jadwal Kerja Pada Tanggal 26 Setiap Bulannya </div>
                           <div class="table-responsive">
                               <table class="table table-bordered dataTable js-exportable mt-3">
                                   <thead>

@@ -172,7 +172,13 @@ class Absensi extends RestController
         $getDataPegawai = $this->ModelUsers->getDataUsersByIdPegawai($no_pegawai);
         $id_users = $getDataPegawai['id_users'];
         $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByMonthAsc($month);
-        $startDate = $getDataAbsensi['date'];
+        // $startDate = $getDataAbsensi['date'];
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
         $endDate = date('Y-m-d');
 
 
@@ -231,8 +237,15 @@ class Absensi extends RestController
         $no_pegawai = $this->input->post('no_pegawai');
         $month = date('m');
         $getDataPegawai = $this->ModelUsers->getDataUsersByIdPegawai($no_pegawai);
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
+        $endDate = date('Y-m-d');
         $id_users = $getDataPegawai['id_users'];
-        $getTotalGaji = $this->ModelGaji->getDataTotal($id_users, $month);
+        $getTotalGaji = $this->ModelGaji->getDataTotalNew($id_users, $startDate,$endDate);
         if ($getTotalGaji != null) {
             $this->response([
                 'status'    => true,
@@ -251,11 +264,17 @@ class Absensi extends RestController
     {
         $no_pegawai = $this->input->post('no_pegawai');
         $month = date('m');
+        if($month == 1){
+            $monthFrom = 12;
+        }else{
+            $monthFrom = $month - 1;
+        }
         $getDataPegawai = $this->ModelUsers->getDataUsersByIdPegawai($no_pegawai);
         $id_users = $getDataPegawai['id_users'];
 
         $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByMonthAsc($month);
-        $startDate = $getDataAbsensi['date'];
+        // $startDate = $getDataAbsensi['date'];
+        $startDate = date('Y').'-'.$monthFrom.'-'.'26';
         $endDate = date('Y-m-d');
         $getData = $this->ModelGaji->getAllData($id_users, $startDate, $endDate);
         $this->response([

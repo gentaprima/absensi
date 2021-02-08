@@ -20,4 +20,17 @@
         public function insertGajiMakan($data){
             return $this->db->insert('tb_uangmakan',$data);
         }
+
+        //REVISI EVA
+
+        public function getDataTotalNew($id_users,$starDate,$endDate){
+            $sql = "SELECT SUM(nominal)as total from tb_uangmakan WHERE
+                        (tanggal BETWEEN ? AND ?) AND
+                        id_users = ?";
+            return $this->db->query($sql,array($starDate,$endDate,$id_users))->row_array();
+        }
+
+       
+
+        //REVISI EVA
     }
