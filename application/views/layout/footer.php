@@ -47,6 +47,11 @@
  <script src="<?= base_url() ?>assets/admin/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
  <script src="<?= base_url() ?>assets/admin/jquery-datatable/extensions/export/buttons.print.min.js"></script>
  <script src="<?= base_url() ?>assets/admin/js/tables/jquery-datatable.js"></script>
+ <script src="<?= base_url() ?>assets/admin/moment.js"></script>
+ <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> -->
+ <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> -->
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
  <script>
    var text = document.getElementById("text");
    if (text != null) {
@@ -90,6 +95,30 @@
      $('[data-toggle="tooltip"]').tooltip()
    })
  </script>
+ <script type="text/javascript">
+   $(document).ready(function() {
+     $('input[name="datefilter[]"]').daterangepicker({
+       autoUpdateInput: false,
+       locale: {
+         cancelLabel: 'Clear'
+       }
+     });
+
+     $('input[name="datefilter[]"]').on('apply.daterangepicker', function(ev, picker) {
+       $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+     });
+
+     $('input[name="datefilter[]"]').on('cancel.daterangepicker', function(ev, picker) {
+       $(this).val('');
+     });
+   })
+  //  $(function() {
+
+
+
+  //  });
+ </script>
+
  </body>
 
  </html>

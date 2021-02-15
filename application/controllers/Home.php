@@ -74,7 +74,9 @@ class Home extends CI_Controller
             $date = $this->_getMonth($monthFrom) . ' ' . $year;
             $startDate = date('Y').'-'.$monthFrom.'-'.'26';
             $endDate = date('Y').'-'.$monthTo.'-'.'25';
+            $change = true;
         } else {
+            $change = false;
             $year = date('Y');
             $month = date('m');
             if($month == 1){
@@ -94,11 +96,13 @@ class Home extends CI_Controller
         
         $data_jadwal = $this->ModelAbsensi->getJadwalKerja();
         $array = [];
+        $arrayLiburNasional = [];
         foreach ($data_jadwal as $dj) {
             $work_day = $dj['work_day'];
             $getDataJadwal = $this->ModelAbsensi->getJadwalKerjaGroupNew($work_day, $startDate, $endDate);
+            // var_dump($getDataJadwal);
             $getJumlahKerja = $this->ModelAbsensi->getJumlahHariByMonthNew(1, $startDate, $endDate);
-            $getJumlahLibur = $this->ModelAbsensi->getJumlahHariByMonthNew(0, $startDate, $endDate);
+            $getJumlahLibur = $this->ModelAbsensi->getJumlahHariByMonthNewLibur(0, $startDate, $endDate,'Libur');
 
             if ($getDataJadwal != null) {
 
@@ -119,9 +123,22 @@ class Home extends CI_Controller
                 array_push($array, $getDataJadwal);
             }
         }
+        foreach($data_jadwal as $dj){
+            $work_day = $dj['work_day'];
+            $getDataJadwal = $this->ModelAbsensi->getJadwalKerjaGroupNewNasional($work_day, $startDate, $endDate,'Libur Nasional');
+            $getJumlahHari = $this->ModelAbsensi->getJumlahHariByMonthNewLibur(0,$startDate,$endDate,'Libur Nasional');
+            if($getDataJadwal != null){
+                if($getJumlahHari != null){
+                    $getDataJadwal += array('jumlah_nasional'=> count($getJumlahHari));
+                }else{
+                    $getDataJadwal += array('jumlah_nasional'=> 0);
+                }
+                array_push($arrayLiburNasional,$getDataJadwal);
+            }
+        }
 
-
-        $dataLibur = $this->ModelAbsensi->getJadwalKerjaGroupByDateNew(0, $startDate, $endDate);
+        $dataLibur = $this->ModelAbsensi->getJadwalKerjaGroupByDateNewLibur(0, $startDate, $endDate,'Libur');
+        $dataLiburNasional = $this->ModelAbsensi->getJadwalKerjaGroupByDateNewLibur(0, $startDate, $endDate,'Libur Nasional');
         $dataKerja = $this->ModelAbsensi->getJadwalKerjaGroupByDateNew(1, $startDate, $endDate);
         $arrayKerja = [];
         foreach ($dataKerja as $dk) {
@@ -157,8 +174,11 @@ class Home extends CI_Controller
             "jadwal"        => "active",
             'data_jadwal'   => $array,
             'data_libur'    => $dataLibur,
+            'data_libur_nasional'    => $dataLiburNasional,
             'data_kerja'    => $arrayKerja,
-            'date'          => $date
+            'data_nasional' => $arrayLiburNasional,
+            'date'          => $date,
+            'change'        => $change
         );
 
         $this->load->view('layout/header', $data);

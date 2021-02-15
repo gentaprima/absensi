@@ -232,8 +232,18 @@
             $sql = "SELECT * FROM tb_absensi
                         WHERE work_day = ? AND 
                         (date BETWEEN ? AND ?)
-                         GROUP BY work_day";
+                         GROUP BY work_day
+                         ORDER BY status = 'tidak'";
             return $this->db->query($sql,array($work_day,$starDate,$end_date))->row_array();
+        }
+        public function getJadwalKerjaGroupNewNasional($work_day,$starDate,$end_date,$status){
+            $sql = "SELECT * FROM tb_absensi
+                        WHERE work_day = ? AND 
+                        (date BETWEEN ? AND ?) AND
+                        status = ?
+                         GROUP BY work_day
+                         ORDER BY status = 'tidak'";
+            return $this->db->query($sql,array($work_day,$starDate,$end_date,$status))->row_array();
         }
 
         public function getJumlahHariByMonthNew($status,$starDate,$end_date){
@@ -244,11 +254,28 @@
             return $this->db->query($sql,array($status,$starDate,$end_date))->result_array();
         }
 
+        public function getJumlahHariByMonthNewLibur($status,$starDate,$end_date,$statusHari){
+            $sql = "SELECT *  FROM tb_absensi 
+                        WHERE 
+                            work_day = ?  AND 
+                            status = ? AND
+                            (date BETWEEN ? AND ?) GROUP BY date";
+            return $this->db->query($sql,array($status,$statusHari,$starDate,$end_date))->result_array();
+        }
+
         public function getJadwalKerjaGroupByDateNew($status,$starDate,$endDate){
             $sql = "SELECT * FROM tb_absensi 
                         WHERE work_day = ? AND 
                              (date BETWEEN ? AND ?) GROUP BY date";
             return $this->db->query($sql,array($status,$starDate,$endDate))->result_array();
+        }
+
+        public function getJadwalKerjaGroupByDateNewLibur($status,$starDate,$endDate,$statusHari){
+            $sql = "SELECT * FROM tb_absensi 
+                        WHERE work_day = ? AND 
+                              status = ? AND
+                             (date BETWEEN ? AND ?) GROUP BY date";
+            return $this->db->query($sql,array($status,$statusHari,$starDate,$endDate))->result_array();
         }
 
 
