@@ -101,4 +101,19 @@
             return $this->db->query($sql,array($id_users,$starDate,$end_date))->result_array();
         }
         //REVISI EVA
+
+        //REVISI EKA
+        public function getHariNasional($firstDate,$secondDate){
+            $sql = "SELECT date FROM tb_absensi WHERE 
+                        (date BETWEEN ? AND ? ) AND
+                        status = ? GROUP BY date";
+            return $this->db->query($sql,array($firstDate,$secondDate,'Libur Nasional'))->result_array();
+        }
+
+        public function cekJadwal($start_date,$end_date){
+            $sql = "SELECT * FROM tb_absensi WHERE 
+                        (date BETWEEN ? AND ?)";
+            return $this->db->query($sql,array($start_date,$end_date))->result_array();
+        }
+        //REVISI EKA
     }

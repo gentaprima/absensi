@@ -23,7 +23,7 @@ class Surat extends RestController
         $id_users = $data_users['id_users'];
         $date = date('m');
 
-        $getDataIzin = $this->ModelSurat->getAllDataSuratIzinByIdUsers($id_users,$date);
+        $getDataIzin = $this->ModelSurat->getAllDataSuratIzinByIdUsers($id_users, $date);
 
         $this->response([
             'data_suratizin' => $getDataIzin,
@@ -101,7 +101,7 @@ class Surat extends RestController
         $alasan = $this->input->post('alasan');
 
         if ($id_users != null && $alasan != null) {
-            
+
             $getDataAbsensi = $this->ModelAbsensi->getDataAbsensiByIdUsers($id_users, $date);
             if ($getDataAbsensi != null) {
                 $getDataIzin = $this->ModelSurat->getDataIzinByIdUsers($id_users, $date);
@@ -154,13 +154,24 @@ class Surat extends RestController
         $end_date = $this->input->post('end_date');
         $no_pegawai = $this->input->post('id_users');
         $expected_days     =  array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-        $days     =  array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday');
+        $days     =  array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
         $getHari = $this->isWeekend($start_date, $end_date, $expected_days);
-        $checkData = $this->isWeekend($dataNow,$start_date,$days);
+        $arrayNasional = [];
+        $checkData = $this->isWeekend($dataNow, $start_date, $days);
         $jumlah_hari = count($getHari);
+        // var_dump($getHari);die;
         $arrayDate = explode('-', $end_date);
         $tahunCuti = $arrayDate[0];
         $batasTahun = date('Y');
+        $month = date('m');
+        $monthAfter = $month + 1;
+        $firstDate = date('Y').'-'.$month.'-'.'26';
+        $secondDate = date('Y').'-'.$monthAfter.'-'.'25';
+        $getDataLibur = $this->ModelSurat->getHariNasional($firstDate,$secondDate);
+        foreach($getDataLibur as $gdl){
+            array_push($arrayNasional,$gdl['date']);
+        }
+        $resultHari = array_diff($getHari,$arrayNasional);
 
 
 
@@ -169,85 +180,94 @@ class Surat extends RestController
         $getDataCuti = $this->ModelSurat->getDataCutiByIdUsers($id_users);
 
         if ($keterangan != null && $start_date != null && $end_date != null && $no_pegawai != null) {
-            if($checkData != null){
-                if(count($checkData) >= 7){
-                if (count($getHari) > 1) {
-                    if ($getDataCuti != null) {
-                        if ($tahunCuti <= $batasTahun) {
-                            $getTotalCuti = $this->ModelSurat->getTotalCutiByIdUsers($id_users);
-                            $totalCuti = $getTotalCuti['total'];
-                            if ($totalCuti + $jumlah_hari > 12) {
-                                $this->response([
-                                    'message'   => "Mohon maaf, Anda Melebihi batas cuti yang diberikan !",
-                                    'status'    => false
-                                ], 200);
+            if ($checkData != null) {
+
+                $checkJadwal = $this->ModelSurat->cekJadwal($start_date,$end_date);
+                if($checkJadwal != null){
+                    if (count($checkData) >= 7) {
+                        if (count($getHari) > 1) {
+                            if ($getDataCuti != null) {
+                                if ($tahunCuti <= $batasTahun) {
+                                    $getTotalCuti = $this->ModelSurat->getTotalCutiByIdUsers($id_users);
+                                    $totalCuti = $getTotalCuti['total'];
+                                    if ($totalCuti + $jumlah_hari > 12) {
+                                        $this->response([
+                                            'message'   => "Mohon maaf, Anda Melebihi batas cuti yang diberikan !",
+                                            'status'    => false
+                                        ], 200);
+                                    } else {
+                                        $data = array(
+                                            'keterangan'    => $keterangan,
+                                            'dari_tanggal'  => $start_date,
+                                            'sampai_tanggal' => $end_date,
+                                            'jumlah_hari'   => count($resultHari),
+                                            'id_users'      => $id_users
+                                        );
+                                        $this->ModelSurat->insertSuratCuti($data);
+                                        $this->response([
+                                            'message'   => "Terima Kasih, Pengajuan anda akan kami proses",
+                                            'status'    => true
+                                        ], 200);
+                                    }
+                                } else {
+                                    $this->response([
+                                        'message'   => "Mohon maaf, Anda hanya bisa mengajukan sampai akhir tahun " . $batasTahun,
+                                        'status'    => false
+                                    ], 200);
+                                }
                             } else {
-                                $data = array(
-                                    'keterangan'    => $keterangan,
-                                    'dari_tanggal'  => $start_date,
-                                    'sampai_tanggal' => $end_date,
-                                    'jumlah_hari'   => $jumlah_hari,
-                                    'id_users'      => $id_users
-                                );
-                                $this->ModelSurat->insertSuratCuti($data);
-                                $this->response([
-                                    'message'   => "Terima Kasih, Pengajuan anda akan kami proses",
-                                    'status'    => true
-                                ], 200);
+                                if ($tahunCuti <= $batasTahun) {
+                                    if ($jumlah_hari < 12) {
+                                        $data = array(
+                                            'keterangan'    => $keterangan,
+                                            'dari_tanggal'  => $start_date,
+                                            'sampai_tanggal' => $end_date,
+                                            'jumlah_hari'   => count($resultHari),
+                                            'id_users'      => $id_users
+                                        );
+                                        $this->ModelSurat->insertSuratCuti($data);
+                                        $this->response([
+                                            'message'   => "Terima Kasih, Pengajuan anda akan kami proses",
+                                            'status'    => true
+                                        ], 200);
+                                    } else {
+                                        $this->response([
+                                            'message'   => "Mohon maaf, Anda Melebihi batas cuti yang diberikan !",
+                                            'status'    => false
+                                        ], 200);
+                                    }
+                                } else {
+                                    $this->response([
+                                        'message'   => "Mohon maaf, Anda hanya bisa mengajukan sampai akhir tahun " . $batasTahun,
+                                        'status'    => false
+                                    ], 200);
+                                }
                             }
                         } else {
                             $this->response([
-                                'message'   => "Mohon maaf, Anda hanya bisa mengajukan sampai akhir tahun " . $batasTahun,
+                                'message'   => "Mohon maaf, Silahkan Masukan tanggal mulai dan akhir yang benar",
                                 'status'    => false
                             ], 200);
                         }
                     } else {
-                        if ($tahunCuti <= $batasTahun) {
-                            if ($jumlah_hari < 12) {
-                                $data = array(
-                                    'keterangan'    => $keterangan,
-                                    'dari_tanggal'  => $start_date,
-                                    'sampai_tanggal' => $end_date,
-                                    'jumlah_hari'   => $jumlah_hari,
-                                    'id_users'      => $id_users
-                                );
-                                $this->ModelSurat->insertSuratCuti($data);
-                                $this->response([
-                                    'message'   => "Terima Kasih, Pengajuan anda akan kami proses",
-                                    'status'    => true
-                                ], 200);
-                            } else {
-                                $this->response([
-                                    'message'   => "Mohon maaf, Anda Melebihi batas cuti yang diberikan !",
-                                    'status'    => false
-                                ], 200);
-                            }
-                        } else {
-                            $this->response([
-                                'message'   => "Mohon maaf, Anda hanya bisa mengajukan sampai akhir tahun " . $batasTahun,
-                                'status'    => false
-                            ], 200);
-                        }
+                        $this->response([
+                            'message'   => "Mohon maaf, Silahkan Ajukan cuti seminggu setelah hari ini ",
+                            'status'    => false
+                        ], 200);
                     }
-                } else {
+                }else{
                     $this->response([
-                        'message'   => "Mohon maaf, Silahkan Masukan tanggal mulai dan akhir yang benar",
+                        'message'   => "Mohon maaf, Jadwal untuk tanggal yang anda input belum tersedia",
                         'status'    => false
                     ], 200);
                 }
-            }else{
-                $this->response([
-                    'message'   => "Mohon maaf, Silahkan Ajukan cuti seminggu setelah hari ini ",
-                    'status'    => false
-                ], 200);
-            }
-            }else{
+
+            } else {
                 $this->response([
                     'message'   => "Mohon maaf, Silahkan Masukan tanggal mulai dan akhir yang benar",
                     'status'    => false
                 ], 200);
             }
-           
         } else {
             $this->response([
                 'message'   => "Mohon maaf, Silahkan lengkapi data terlebih dahulu",
@@ -266,9 +286,9 @@ class Surat extends RestController
             $getDataCuti = $this->ModelSurat->getAllDataCutiByIdUsers($id_users, $year);
             $getDataSisaCuti = $this->ModelSurat->getDataSisaCutiByIdUsers($id_users, $year);
             $jumlahCuti = $getDataSisaCuti['total'];
-            if($jumlahCuti == null){
+            if ($jumlahCuti == null) {
                 $jumlahCuti = 0;
-            }else{
+            } else {
                 $jumlahCuti = $jumlahCuti;
             }
             $sisaCuti = 12 - $getDataSisaCuti['total'];
